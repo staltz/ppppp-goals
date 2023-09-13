@@ -89,11 +89,17 @@ test('getByRec', async (t) => {
   const gottenGoal = alice.goals.getByID(feedID)
   assert.strictEqual(gottenGoal.id, feedID, 'gotten goal id is correct')
 
-  const recGoals = alice.goals.getByRec(post1)
+  const recGoals = alice.goals.getByRec(post2)
   assert(Array.isArray(recGoals), 'recGoals is an array')
   assert.strictEqual(recGoals.length, 1, 'recGoals has one item')
   const recGoal = recGoals[0]
   assert.strictEqual(recGoal.id, feedID, 'recGoal id is correct')
+
+  alice.goals.set(feedID, 'oldest-1')
+  assert('set goal to oldest-1')
+  const recGoals2 = alice.goals.getByRec(post2)
+  assert(Array.isArray(recGoals2), 'recGoals is an array')
+  assert.strictEqual(recGoals2.length, 0, 'recGoals2 has zero items')
 
   await p(alice.close)(true)
 })
