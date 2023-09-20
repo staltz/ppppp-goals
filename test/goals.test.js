@@ -27,18 +27,15 @@ test('set, getByID, list, listen', async (t) => {
   }
 
   {
-    const goal = alice.goals.getByID(aliceID)
+    const goal = alice.goals.get(aliceID)
     assert.strictEqual(goal.id, aliceID, 'gotten goal id is correct')
     assert.strictEqual(goal.type, 'newest', 'gotten goal type is correct')
     assert.strictEqual(goal.count, 5, 'gotten goal count is correct')
   }
 
   {
-    const goals = alice.goals.getByRec(aliceAccountRoot)
-    assert(Array.isArray(goals), 'gotten rec goals is an array')
-    assert.strictEqual(goals.length, 1, 'gotten rec goals has one item')
-    const goal = goals[0]
-    assert.strictEqual(goal.id, aliceID, 'gotten rec goal id is correct')
+    const purpose = alice.goals.getRecordPurpose(aliceAccountRoot)
+    assert.equal(purpose, 'goal', 'rec purpose is "goal"')
   }
 
   {
@@ -63,7 +60,7 @@ test('set, getByID, list, listen', async (t) => {
   await p(alice.close)(true)
 })
 
-test('getByRec', async (t) => {
+test('getRecordPurpose', async (t) => {
   const alice = createPeer({ name: 'alice' })
 
   await alice.db.loaded()
@@ -86,20 +83,16 @@ test('getByRec', async (t) => {
   const feedID = alice.db.feed.getID(aliceID, 'post')
 
   alice.goals.set(feedID, 'all')
-  const gottenGoal = alice.goals.getByID(feedID)
+  const gottenGoal = alice.goals.get(feedID)
   assert.strictEqual(gottenGoal.id, feedID, 'gotten goal id is correct')
 
-  const recGoals = alice.goals.getByRec(post2)
-  assert(Array.isArray(recGoals), 'recGoals is an array')
-  assert.strictEqual(recGoals.length, 1, 'recGoals has one item')
-  const recGoal = recGoals[0]
-  assert.strictEqual(recGoal.id, feedID, 'recGoal id is correct')
+  const purpose = alice.goals.getRecordPurpose(post2)
+  assert.equal(purpose, 'goal', 'purpose is "goal"')
 
   alice.goals.set(feedID, 'oldest-1')
   assert('set goal to oldest-1')
-  const recGoals2 = alice.goals.getByRec(post2)
-  assert(Array.isArray(recGoals2), 'recGoals is an array')
-  assert.strictEqual(recGoals2.length, 0, 'recGoals2 has zero items')
+  const purpose2 = alice.goals.getRecordPurpose(post2)
+  assert.equal(purpose2, 'none', 'purpose2 is "none"')
 
   await p(alice.close)(true)
 })
