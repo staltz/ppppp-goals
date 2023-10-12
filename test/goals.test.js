@@ -79,6 +79,11 @@ test('getRecordPurpose', async (t) => {
     domain: 'post',
     data: { text: 'm2' },
   })
+  const post3 = await p(alice.db.feed.publish)({
+    account: aliceID,
+    domain: 'post',
+    data: { text: 'm3' },
+  })
 
   const feedID = alice.db.feed.getID(aliceID, 'post')
 
@@ -89,8 +94,8 @@ test('getRecordPurpose', async (t) => {
   const purpose = alice.goals.getRecordPurpose(post2)
   assert.equal(purpose, 'goal', 'purpose is "goal"')
 
-  alice.goals.set(feedID, 'oldest-1')
-  assert('set goal to oldest-1')
+  alice.goals.set(feedID, 'newest-1')
+  assert('set goal to newest-1')
   const purpose2 = alice.goals.getRecordPurpose(post2)
   assert.equal(purpose2, 'none', 'purpose2 is "none"')
 
