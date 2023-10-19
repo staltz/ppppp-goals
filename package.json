@@ -25,7 +25,8 @@
     "node": ">=16"
   },
   "dependencies": {
-    "obz": "~1.1.0"
+    "obz": "~1.1.0",
+    "multicb": "~1.2.2"
   },
   "devDependencies": {
     "bs58": "^5.0.0",

@@ -34,7 +34,7 @@ test('set, getByID, list, listen', async (t) => {
   }
 
   {
-    const purpose = alice.goals.getRecordPurpose(aliceAccountRoot)
+    const purpose = await p(alice.goals.getRecordPurpose)(aliceAccountRoot)
     assert.equal(purpose, 'goal', 'rec purpose is "goal"')
   }
 
@@ -91,13 +91,17 @@ test('getRecordPurpose', async (t) => {
   const gottenGoal = alice.goals.get(feedID)
   assert.strictEqual(gottenGoal.id, feedID, 'gotten goal id is correct')
 
-  const purpose = alice.goals.getRecordPurpose(post2)
+  const purpose = await p(alice.goals.getRecordPurpose)(post2)
   assert.equal(purpose, 'goal', 'purpose is "goal"')
 
   alice.goals.set(feedID, 'newest-1')
   assert('set goal to newest-1')
-  const purpose2 = alice.goals.getRecordPurpose(post2)
+  const purpose2 = await p(alice.goals.getRecordPurpose)(post2)
   assert.equal(purpose2, 'none', 'purpose2 is "none"')
+
+  await p(alice.db.ghosts.add)({ msg: post2.id, tangle: feedID, max: 5 })
+  const purpose3 = await p(alice.goals.getRecordPurpose)(post2)
+  assert.equal(purpose3, 'ghost', 'purpose3 is "ghost"')
 
   await p(alice.close)(true)
 })
