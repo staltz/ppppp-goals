@@ -34,7 +34,7 @@ test('set, getByID, list, listen', async (t) => {
   }
 
   {
-    const purpose = alice.goals.getRecordPurpose(aliceAccountRoot)
+    const purpose = alice.goals.getMsgPurpose(aliceAccountRoot.id, aliceAccountRoot.msg)
     assert.equal(purpose, 'goal', 'rec purpose is "goal"')
   }
 
@@ -60,7 +60,7 @@ test('set, getByID, list, listen', async (t) => {
   await p(alice.close)(true)
 })
 
-test('getRecordPurpose', async (t) => {
+test('getMsgPurpose', async (t) => {
   const alice = createPeer({ name: 'alice' })
 
   await alice.db.loaded()
@@ -91,18 +91,18 @@ test('getRecordPurpose', async (t) => {
   const gottenGoal = alice.goals.get(feedID)
   assert.strictEqual(gottenGoal.id, feedID, 'gotten goal id is correct')
 
-  const purpose = alice.goals.getRecordPurpose(post2)
+  const purpose = alice.goals.getMsgPurpose(post2.id, post2.msg)
   assert.equal(purpose, 'goal', 'purpose is "goal"')
 
   alice.goals.set(feedID, 'newest-1')
   assert('set goal to newest-1')
-  const purpose2 = alice.goals.getRecordPurpose(post2)
+  const purpose2 = alice.goals.getMsgPurpose(post2.id, post2.msg)
   assert.equal(purpose2, 'none', 'purpose2 is "none"')
 
   await p(alice.close)(true)
 })
 
-test('getRecordPurpose ghost', async (t) => {
+test('getMsgPurpose ghost', async (t) => {
   const alice = createPeer({ name: 'alice', record: {ghostSpan: 3} })
 
   await alice.db.loaded()
@@ -126,11 +126,11 @@ test('getRecordPurpose ghost', async (t) => {
   const recs = msgIDs.map(id => alice.db.getRecord(id))
 
   alice.goals.set(feedID, 'record')
-  assert.equal(alice.goals.getRecordPurpose(recs[1]), 'none')
-  assert.equal(alice.goals.getRecordPurpose(recs[2]), 'ghost')
-  assert.equal(alice.goals.getRecordPurpose(recs[3]), 'trail')
-  assert.equal(alice.goals.getRecordPurpose(recs[4]), 'trail')
-  assert.equal(alice.goals.getRecordPurpose(recs[5]), 'goal')
+  assert.equal(alice.goals.getMsgPurpose(recs[1].id, recs[1].msg), 'none')
+  assert.equal(alice.goals.getMsgPurpose(recs[2].id, recs[2].msg), 'ghost')
+  assert.equal(alice.goals.getMsgPurpose(recs[3].id, recs[3].msg), 'trail')
+  assert.equal(alice.goals.getMsgPurpose(recs[4].id, recs[4].msg), 'trail')
+  assert.equal(alice.goals.getMsgPurpose(recs[5].id, recs[5].msg), 'goal')
 
   await p(alice.close)(true)
 })
