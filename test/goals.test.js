@@ -34,7 +34,10 @@ test('set, getByID, list, listen', async (t) => {
   }
 
   {
-    const purpose = alice.goals.getMsgPurpose(aliceAccountRoot.id, aliceAccountRoot.msg)
+    const [purpose] = alice.goals.getMsgPurpose(
+      aliceAccountRoot.id,
+      aliceAccountRoot.msg
+    )
     assert.equal(purpose, 'goal', 'rec purpose is "goal"')
   }
 
@@ -91,19 +94,19 @@ test('getMsgPurpose', async (t) => {
   const gottenGoal = alice.goals.get(feedID)
   assert.strictEqual(gottenGoal.id, feedID, 'gotten goal id is correct')
 
-  const purpose = alice.goals.getMsgPurpose(post2.id, post2.msg)
+  const [purpose] = alice.goals.getMsgPurpose(post2.id, post2.msg)
   assert.equal(purpose, 'goal', 'purpose is "goal"')
 
   alice.goals.set(feedID, 'newest-1')
   assert('set goal to newest-1')
-  const purpose2 = alice.goals.getMsgPurpose(post2.id, post2.msg)
+  const [purpose2] = alice.goals.getMsgPurpose(post2.id, post2.msg)
   assert.equal(purpose2, 'none', 'purpose2 is "none"')
 
   await p(alice.close)(true)
 })
 
 test('getMsgPurpose ghost', async (t) => {
-  const alice = createPeer({ name: 'alice', record: {ghostSpan: 3} })
+  const alice = createPeer({ name: 'alice', record: { ghostSpan: 3 } })
 
   await alice.db.loaded()
   const aliceID = await p(alice.db.account.create)({
@@ -123,14 +126,18 @@ test('getMsgPurpose ghost', async (t) => {
 
   const msgIDs = tangle.topoSort()
   assert.equal(msgIDs.length, 6, 'tangle has root+5 messages')
-  const recs = msgIDs.map(id => alice.db.getRecord(id))
+  const recs = msgIDs.map((id) => alice.db.getRecord(id))
 
   alice.goals.set(feedID, 'record')
-  assert.equal(alice.goals.getMsgPurpose(recs[1].id, recs[1].msg), 'none')
-  assert.equal(alice.goals.getMsgPurpose(recs[2].id, recs[2].msg), 'ghost')
-  assert.equal(alice.goals.getMsgPurpose(recs[3].id, recs[3].msg), 'trail')
-  assert.equal(alice.goals.getMsgPurpose(recs[4].id, recs[4].msg), 'trail')
-  assert.equal(alice.goals.getMsgPurpose(recs[5].id, recs[5].msg), 'goal')
+  assert.equal(alice.goals.getMsgPurpose(recs[1].id, recs[1].msg)[0], 'none')
+  assert.equal(alice.goals.getMsgPurpose(recs[2].id, recs[2].msg)[0], 'ghost')
+  assert.equal(alice.goals.getMsgPurpose(recs[3].id, recs[3].msg)[0], 'trail')
+  assert.equal(alice.goals.getMsgPurpose(recs[4].id, recs[4].msg)[0], 'trail')
+  assert.equal(alice.goals.getMsgPurpose(recs[5].id, recs[5].msg)[0], 'goal')
+
+  const [purpose, details] = alice.goals.getMsgPurpose(recs[2].id, recs[2].msg)
+  assert.equal(purpose, 'ghost')
+  assert.deepEqual(details, { tangleID: feedID, span: 3 })
 
   await p(alice.close)(true)
 })
