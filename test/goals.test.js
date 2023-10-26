@@ -106,7 +106,7 @@ test('getMsgPurpose', async (t) => {
 })
 
 test('getMsgPurpose ghost', async (t) => {
-  const alice = createPeer({ name: 'alice', record: { ghostSpan: 3 } })
+  const alice = createPeer({ name: 'alice', dict: { ghostSpan: 3 } })
 
   await alice.db.loaded()
   const aliceID = await p(alice.db.account.create)({
@@ -114,21 +114,21 @@ test('getMsgPurpose ghost', async (t) => {
     _nonce: 'alice',
   })
 
-  await p(alice.record.load)(aliceID)
-  await p(alice.record.update)('profile', { name: 'alice' })
-  await p(alice.record.update)('profile', { name: 'Alice' })
-  await p(alice.record.update)('profile', { name: 'Alicia' })
-  await p(alice.record.update)('profile', { name: 'ALICIA' })
-  await p(alice.record.update)('profile', { name: 'ALICIAA' })
+  await p(alice.dict.load)(aliceID)
+  await p(alice.dict.update)('profile', { name: 'alice' })
+  await p(alice.dict.update)('profile', { name: 'Alice' })
+  await p(alice.dict.update)('profile', { name: 'Alicia' })
+  await p(alice.dict.update)('profile', { name: 'ALICIA' })
+  await p(alice.dict.update)('profile', { name: 'ALICIAA' })
 
-  const feedID = alice.record.getFeedID('profile')
+  const feedID = alice.dict.getFeedID('profile')
   const tangle = alice.db.getTangle(feedID)
 
   const msgIDs = tangle.topoSort()
   assert.equal(msgIDs.length, 6, 'tangle has root+5 messages')
   const recs = msgIDs.map((id) => alice.db.getRecord(id))
 
-  alice.goals.set(feedID, 'record')
+  alice.goals.set(feedID, 'dict')
   assert.equal(alice.goals.getMsgPurpose(recs[1].id, recs[1].msg)[0], 'none')
   assert.equal(alice.goals.getMsgPurpose(recs[2].id, recs[2].msg)[0], 'ghost')
   assert.equal(alice.goals.getMsgPurpose(recs[3].id, recs[3].msg)[0], 'trail')
