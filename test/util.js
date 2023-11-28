@@ -6,14 +6,14 @@ const Keypair = require('ppppp-keypair')
 
 function createPeer(opts) {
   if (opts.name) {
-    opts.path ??= path.join(os.tmpdir(), 'tanglesync-' + opts.name)
+    opts.db ??= { path: path.join(os.tmpdir(), 'tanglesync-' + opts.name) }
     opts.keypair ??= Keypair.generate('ed25519', opts.name)
     opts.name = undefined
   }
-  if (!opts.path) throw new Error('need opts.path in createPeer()')
+  if (!opts.db.path) throw new Error('need opts.db.path in createPeer()')
   if (!opts.keypair) throw new Error('need opts.keypair in createPeer()')
 
-  rimraf.sync(opts.path)
+  rimraf.sync(opts.db.path)
   return require('secret-stack/bare')()
     .use(require('secret-stack/plugins/net'))
     .use(require('secret-handshake-ext/secret-stack'))

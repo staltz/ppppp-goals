@@ -9,7 +9,7 @@ test('set, getByID, list, listen', async (t) => {
 
   await alice.db.loaded()
   const aliceID = await p(alice.db.account.create)({
-    domain: 'account',
+    subdomain: 'account',
     _nonce: 'alice',
   })
   const aliceAccountRoot = alice.db.getRecord(aliceID)
@@ -68,7 +68,7 @@ test('getMsgPurpose', async (t) => {
 
   await alice.db.loaded()
   const aliceID = await p(alice.db.account.create)({
-    domain: 'account',
+    subdomain: 'account',
     _nonce: 'alice',
   })
 
@@ -110,7 +110,7 @@ test('getMsgPurpose ghost', async (t) => {
 
   await alice.db.loaded()
   const aliceID = await p(alice.db.account.create)({
-    domain: 'account',
+    subdomain: 'account',
     _nonce: 'alice',
   })
 
