@@ -4,7 +4,7 @@ const { isMapIterator } = require('node:util/types')
 const p = require('node:util').promisify
 const { createPeer } = require('./util')
 
-test('set, getByID, list, listen', async (t) => {
+test('set, getByID, list, watch', async (t) => {
   const alice = createPeer({ name: 'alice' })
 
   await alice.db.loaded()
@@ -14,16 +14,16 @@ test('set, getByID, list, listen', async (t) => {
   })
   const aliceAccountRoot = alice.db.getRecord(aliceID)
 
-  const listened = []
-  const stopListening = alice.goals.listen((goal) => {
-    listened.push(goal)
+  const watched = []
+  const stopListening = alice.goals.watch((goal) => {
+    watched.push(goal)
   })
 
   {
-    assert.strictEqual(listened.length, 0, 'listened goals is empty')
+    assert.strictEqual(watched.length, 0, 'watched goals is empty')
     alice.goals.set(aliceID, 'newest-5')
     assert('set goal done')
-    assert.strictEqual(listened.length, 1, 'listened goals has one')
+    assert.strictEqual(watched.length, 1, 'watched goals has one')
   }
 
   {
@@ -51,7 +51,7 @@ test('set, getByID, list, listen', async (t) => {
     assert.strictEqual(goal.id, aliceID, 'listed goal id is correct')
   }
 
-  assert.strictEqual(listened.length, 1, 'total listened goals was one')
+  assert.strictEqual(watched.length, 1, 'total watched goals was one')
 
   assert.strictEqual(
     typeof stopListening,
