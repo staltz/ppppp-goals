@@ -4,6 +4,25 @@ const { isMapIterator } = require('node:util/types')
 const p = require('node:util').promisify
 const { createPeer } = require('./util')
 
+test('parse() and serialize()', async (t) => {
+  const peer = createPeer({ name: 'alice' })
+  await peer.db.loaded()
+
+  const all = peer.goals.parse('all')
+  assert.equal(all.type, 'all')
+  assert.equal(all.count, Infinity)
+
+  const newest = peer.goals.parse('newest-123')
+  assert.equal(newest.type, 'newest')
+  assert.equal(newest.count, 123)
+
+  assert.equal(peer.goals.serialize(all), 'all')
+  assert.equal(peer.goals.serialize(newest), 'newest-123')
+
+  await p(setTimeout)(200) // necessary wait, otherwise peer.close fails
+  await p(peer.close)(true)
+})
+
 test('set, getByID, list, watch', async (t) => {
   const alice = createPeer({ name: 'alice' })
 
