@@ -29,6 +29,7 @@ function createPeer(config) {
     .use(require('secret-handshake-ext/secret-stack'))
     .use(require('ppppp-db'))
     .use(require('ppppp-dict'))
+    .use(require('ppppp-set'))
     .use(require('ssb-box'))
     .use(require('../lib'))
     .call(null, {
