@@ -93,21 +93,21 @@ test('getMsgPurpose', async (t) => {
 
   const post1 = await p(alice.db.feed.publish)({
     account: aliceID,
-    domain: 'post',
+    domain: 'posts',
     data: { text: 'm1' },
   })
   const post2 = await p(alice.db.feed.publish)({
     account: aliceID,
-    domain: 'post',
+    domain: 'posts',
     data: { text: 'm2' },
   })
   const post3 = await p(alice.db.feed.publish)({
     account: aliceID,
-    domain: 'post',
+    domain: 'posts',
     data: { text: 'm3' },
   })
 
-  const feedID = alice.db.feed.getID(aliceID, 'post')
+  const feedID = alice.db.feed.getID(aliceID, 'posts')
 
   alice.goals.set(feedID, 'all')
   const gottenGoal = alice.goals.get(feedID)
